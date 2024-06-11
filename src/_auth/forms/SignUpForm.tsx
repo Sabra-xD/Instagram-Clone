@@ -53,7 +53,7 @@ const SignUpForm = () => {
 
     console.log("Setting the newUser & Dispatching, The user is: ",newUser);
     dispatch(setUser(newUser));
-    dispatch(setIsAuthenticated(false));
+    dispatch(setIsAuthenticated(true));
 
   }
 

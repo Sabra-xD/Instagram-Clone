@@ -33,7 +33,11 @@ export const storeSlice = createSlice({
         },
         setIsAuthenticated: (state,action)=>{
             console.log("The action.payload is: ",action.payload);
-            state.isAuthenticated = true;
+            state.isAuthenticated = action.payload;
+        },
+        resetStates: (state,action)=>{
+            //In this function, I want to reset ALL of my states on the log out.
+            //Include that within a function that is called from mutation.
         }
     }
 })
@@ -41,4 +45,5 @@ export const storeSlice = createSlice({
 export const { setUser,setIsAuthenticated} = storeSlice.actions;
 export default storeSlice.reducer;
 export const selectIsAuthenticated = (state) => state.storeReducer.isAuthenticated;
+export const selectUser = (state) => state.storeReducer.user;
 

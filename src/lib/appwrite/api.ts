@@ -1,8 +1,7 @@
 import { INewUser } from "@/types";
 import { account, appwriteConfig, avatars, databases } from "./config";
 import { ID, Query } from "appwrite";
-// import { store } from "@/redux/store";
-// import { setUser } from "@/redux/slice/slice";
+
 
 export async function createUserAccount(user: INewUser){
     console.log(user);
@@ -96,8 +95,11 @@ export async function getCurrentUser(){
 
 export async function logOut(){
     try{
+        console.log("Logging out...")
         await account.deleteSession('current');
         localStorage.clear();
+        console.log("Logged out..");
+        return true;
     }catch(error){
         console.log("Error in the logOut: ",error);
     }
