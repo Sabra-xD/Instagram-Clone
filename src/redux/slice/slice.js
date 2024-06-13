@@ -29,6 +29,7 @@ export const storeSlice = createSlice({
             state.user = action.payload;
         },
         setIsLoading: (state,action)=>{
+            state.isLoading = action.payload;
 
         },
         setIsAuthenticated: (state,action)=>{
@@ -42,8 +43,9 @@ export const storeSlice = createSlice({
     }
 })
 
-export const { setUser,setIsAuthenticated} = storeSlice.actions;
+export const { setUser,setIsAuthenticated,setIsLoading} = storeSlice.actions;
 export default storeSlice.reducer;
 export const selectIsAuthenticated = (state) => state.storeReducer.isAuthenticated;
 export const selectUser = (state) => state.storeReducer.user;
+export const selectIsLoading = (state) => state.storeReducer.isLoading;
 

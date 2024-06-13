@@ -1,8 +1,10 @@
 import {
-useMutation
+useMutation,
+useQueryClient
 } from '@tanstack/react-query'
-import { createUserAccount, logOut, signInAccount } from '../appwrite/api'
-import { INewUser } from '@/types'
+import { createPost, createUserAccount, logOut, signInAccount } from '../appwrite/api'
+import { INewPost, INewUser } from '@/types'
+import { QUERY_KEYS } from './queryKeys'
 
 //Simply for data fetch and mutation, caching and infinite scroll.
 
@@ -29,4 +31,19 @@ export const useSignOut = () => {
         mutationFn: logOut
     })
     
+}
+
+
+
+export const useCreatePost = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (post:INewPost) => createPost(post),
+        onSuccess: () => {
+            //Invalidates the data so that we re-fetch it again from the server.
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+        }
+    })
 }

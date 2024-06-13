@@ -1,6 +1,6 @@
-import { INewUser } from "@/types";
-import { account, appwriteConfig, avatars, databases } from "./config";
-import { ID, Query } from "appwrite";
+import { INewPost, INewUser } from "@/types";
+import { account, appwriteConfig, avatars, databases, storage } from "./config";
+import { ID, ImageGravity, Query } from "appwrite";
 
 
 export async function createUserAccount(user: INewUser){
@@ -105,3 +105,105 @@ export async function logOut(){
     }
 }
 
+
+
+
+export async function createPost(post: INewPost){
+ 
+    console.log("Entered the createPost");
+    const uploadedFile = await uploadFile(post.file [0])
+    //Uploading image to storage.
+    if(!uploadedFile){
+        throw Error;
+    }
+    console.log("File was uploaded.")
+    console.log("The post owner is: ",post.userId);
+
+    // Getting the file URL To attach to our post.
+    const fileUrl = await getFilePreview(uploadedFile.$id);
+    if(!fileUrl){
+        //Then the file was not uploaded properly, I think we'd need to delete it.
+        deleteFile(uploadedFile.$id);
+        throw Error;
+    }
+    console.log("We have the URL which is: ",fileUrl)
+
+
+    //Convert tags to an array?
+    const tags = post.tags?.replace(/ /g,'').split(',') || [];
+
+    //Save post to DB
+    console.log("We should be creating the document");
+    console.log("The fileURL is: ",fileUrl);
+   
+    const newPost = await databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.postCollectionId,
+        ID.unique(),
+        {
+            creator: post.userId,
+            caption: post.caption,
+            imageUrl: fileUrl,
+            imageId: uploadedFile.$id,
+            location: post.location,
+            tags: tags,
+        }
+    )
+    console.log("Dcoument created")
+
+
+    if(!newPost){
+        await deleteFile(uploadedFile.$id);
+        throw Error;
+    }
+
+    return newPost;    
+}
+
+export async function uploadFile(file: File){
+    try{
+        const uploadedFile = storage.createFile(
+            appwriteConfig.storageId,
+            ID.unique(),
+            file,
+        );
+        return uploadedFile;
+
+    }catch(error){
+        console.log(error);
+    }
+}
+
+export async function deleteFile(fileId: string){
+    try{
+        //Here we need to delete a file using its id
+        storage.deleteFile(appwriteConfig.storageId,
+            fileId
+        )
+
+        return {status: 'ok'};
+    }catch(error){
+        console.log(error);
+    }
+}
+
+
+export async function getFilePreview(fileId: string){
+    try{
+        const fileUrl = storage.getFilePreview(appwriteConfig.storageId,
+            fileId,
+            2000,
+            2000,
+            ImageGravity.Top,
+            100,
+            );
+           console.log("The url we got from the function is: ",fileUrl);
+            return fileUrl
+    }catch(error){
+        console.log(error);
+    }
+}
+
+export async function getRecentPosts(){
+    
+}

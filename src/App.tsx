@@ -1,7 +1,7 @@
 import AuthLayOut from './_auth/AuthLayOut';
 import SignInForm from './_auth/forms/SignInForm';
 import SignUpForm from './_auth/forms/SignUpForm';
-import { Home } from './_root/Pages';
+import { AllUsers, CreatePost, EditPost, Explore, Home, PostDetails, Profile, Saved, UpdateProfile } from './_root/Pages';
 import RootLayOut from './_root/RootLayOut';
 import './globals.css';
 import { Routes,Route } from 'react-router-dom';
@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import { getCurrentUser } from './lib/appwrite/api';
 import { useDispatch } from 'react-redux';
 import { setIsAuthenticated, setUser } from './redux/slice/slice';
+
 
 const App = () => {
 
@@ -20,6 +21,8 @@ const App = () => {
             const user = await getCurrentUser();
             if (user) {
                 console.log("We re-fetched the user: ", user);
+                //We re-fetch the user almost with every refresh of any page.
+                //This is how we set it to be 
                 dispatch(setUser(user));
                 dispatch(setIsAuthenticated(true));
             }
@@ -44,6 +47,14 @@ const App = () => {
             {/* Private Routes */}
             <Route element={<RootLayOut />}>
                 <Route index element={<Home />}/>
+                <Route path="/explore" element={<Explore />}/>
+                <Route path="/all-users" element={<AllUsers />}/>
+                <Route path="/saved" element={<Saved />}/>
+                <Route path="/create-post" element={<CreatePost />}/>       
+                <Route path="/update-post/:id" element={<EditPost />}/>  
+                <Route path="/posts/:id" element={<PostDetails />}/>  
+                <Route path="/profile/:id/*" element={<Profile />}/>  
+                <Route path="/update-profile/:id" element={<UpdateProfile />}/>   
             </Route>
 
 
