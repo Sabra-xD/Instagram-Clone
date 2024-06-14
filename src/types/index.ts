@@ -1,3 +1,4 @@
+import { Models } from "appwrite";
 import React from "react";
 
 export type INavLink = {
@@ -32,6 +33,11 @@ export type INavLink = {
     location?: string;
     tags?: string;
   };
+
+ export type PostStatsProps = {
+    post: Models.Document,
+    userId: string
+}
   
   export type IUser = {
     id: string;
