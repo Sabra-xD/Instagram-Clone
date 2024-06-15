@@ -3,8 +3,8 @@ useMutation,
     useQuery,
 useQueryClient
 } from '@tanstack/react-query'
-import { createPost, createUserAccount, deleteSavedPost, getCurrentUser, getRecentPosts, likePost, logOut, savePost, signInAccount } from '../appwrite/api'
-import { INewPost, INewUser } from '@/types'
+import { createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getPostById, getRecentPosts, likePost, logOut, savePost, signInAccount, updatePost } from '../appwrite/api'
+import { INewPost, INewUser, IUpdatePost } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
 
 //Simply for data fetch and mutation, caching and infinite scroll.
@@ -50,9 +50,6 @@ export const useCreatePost = () => {
 }
 
 export const useGetRecentPosts = () => {
-    //useQuery is used when fetching data from the server, used for GET requests.
-    //And caching it locally.
-    //Use mutation is used for POST,PUT,Delete or PATCH requests.
     return useQuery({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
         queryFn: getRecentPosts,
@@ -129,3 +126,42 @@ export const useGetCurrentUser = () => {
         queryFn: getCurrentUser,
     })
 }
+
+
+export const useGetPostById = (postId?:string) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
+        queryFn: () => getPostById(postId ? postId : ""),
+        enabled: !!postId,
+      })
+}
+
+
+export const useUpdatePost = () =>{
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (post:IUpdatePost) => updatePost(post),
+        onSuccess: (data) => {
+                queryClient.invalidateQueries({
+                    //The data.$id is used for locating an exact instance of get post by id and invalidating that.
+                    queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id],
+                })
+            }
+    })
+}
+
+
+export const useDeletePost = () =>{
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({postId,imageId} : {postId: string,imageId:string}) => deletePost(postId,imageId),
+        onSuccess: () => {
+                queryClient.invalidateQueries({
+                    queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+                })
+            }
+    })
+}
+
+
+

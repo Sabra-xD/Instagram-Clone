@@ -1,4 +1,4 @@
-import { INewPost, INewUser} from "@/types";
+import { INewPost, INewUser, IUpdatePost} from "@/types";
 import { account, appwriteConfig, avatars, databases, storage } from "./config";
 import { ID, ImageGravity, Query } from "appwrite";
 
@@ -109,14 +109,12 @@ export async function logOut(){
 
 export async function createPost(post: INewPost){
  
-    console.log("Entered the createPost");
+   try{
     const uploadedFile = await uploadFile(post.file [0])
     //Uploading image to storage.
     if(!uploadedFile){
         throw Error;
     }
-    console.log("File was uploaded.")
-    console.log("The post owner is: ",post.userId);
 
     // Getting the file URL To attach to our post.
     const fileUrl = await getFilePreview(uploadedFile.$id);
@@ -125,16 +123,11 @@ export async function createPost(post: INewPost){
         deleteFile(uploadedFile.$id);
         throw Error;
     }
-    console.log("We have the URL which is: ",fileUrl)
-
 
     //Convert tags to an array?
     const tags = post.tags?.replace(/ /g,'').split(',') || [];
 
-    //Save post to DB
-    console.log("We should be creating the document");
-    console.log("The fileURL is: ",fileUrl);
-   
+    //Save post to DB   
     const newPost = await databases.createDocument(
         appwriteConfig.databaseId,
         appwriteConfig.postCollectionId,
@@ -148,8 +141,6 @@ export async function createPost(post: INewPost){
             tags: tags,
         }
     )
-    console.log("Dcoument created")
-
 
     if(!newPost){
         await deleteFile(uploadedFile.$id);
@@ -157,6 +148,9 @@ export async function createPost(post: INewPost){
     }
 
     return newPost;    
+   }catch(error){
+    console.log(error);
+   }
 }
 
 export async function uploadFile(file: File){
@@ -265,4 +259,93 @@ export async function deleteSavedPost(savedRecordId: string){
     }catch(error){
         console.log(error)
     }
+}
+
+
+export async function getPostById(postId:string){
+    try{
+        const post = await databases.getDocument(appwriteConfig.databaseId,appwriteConfig.postCollectionId,postId);
+        if(!post) throw Error;
+        console.log(" The post insid ethe getPostByID: ", post);
+        return post;
+    }catch(error){
+        console.log(error);
+    }
+}
+
+
+export async function updatePost(post: IUpdatePost){
+    
+    const hasFileBeenUpdated = post.file.length > 0;
+
+    let image = {
+        imageUrl: post?.imageUrl,
+        imageId: post?.imageId,
+    }
+
+   try{
+    
+    if(hasFileBeenUpdated){
+
+        const uploadedFile = await uploadFile(post.file [0])
+        if(!uploadedFile){
+            throw Error;
+        }
+    
+        const fileUrl = await getFilePreview(uploadedFile.$id);
+        if(!fileUrl){
+            deleteFile(uploadedFile.$id);
+            throw Error;
+        }
+
+        image = {...image,imageUrl: fileUrl, imageId: uploadedFile.$id};
+    
+    }
+
+    const tags = post.tags?.replace(/ /g,'').split(',') || [];
+
+    const updatedPost = await databases.updateDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.postCollectionId,
+        post.postId,
+        {
+            caption: post?.caption,
+            imageUrl: image?.imageUrl,
+            imageId: image?.imageId,
+            location: post?.location,
+            tags: tags,
+        }
+    )
+
+    if(!updatedPost){
+        await deleteFile(image.imageId);
+        throw Error;
+    }
+
+    console.log("The updated post is: ",updatePost);
+
+    return updatedPost;
+
+   }catch(error){
+    console.log(error);
+   }
+}
+
+
+export async function deletePost(postId: string, imageId: string){
+
+    try{
+        //We also need to delete shit from the storage.
+        const storageStatusCode = await storage.deleteFile(appwriteConfig.storageId,imageId);
+        if(!storageStatusCode) throw Error;
+        const statusCode = await databases.deleteDocument(appwriteConfig.databaseId,appwriteConfig.postCollectionId,postId);
+        if(!statusCode) throw Error;
+
+        return statusCode;
+
+
+    }catch(error){
+        console.log(error);
+    }
+
 }

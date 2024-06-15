@@ -15,18 +15,17 @@ type FileUploaderProps = {
 
 const FileUploader = ({fieldChange,mediaUrl} : FileUploaderProps) => {
 
-    const [fileUrl, setFileUrl] = useState  ('');
+    const [fileUrl, setFileUrl] = useState  (mediaUrl);
     const [file,setFile] = useState<File[]>([]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
         setFile(acceptedFiles);
         fieldChange(acceptedFiles);
         setFileUrl(URL.createObjectURL(acceptedFiles[0]));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [file]);
       
-      const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
-
+      const {getRootProps, getInputProps} = useDropzone({onDrop})
 
     
       

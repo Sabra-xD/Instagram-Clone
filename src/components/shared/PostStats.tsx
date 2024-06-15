@@ -10,7 +10,7 @@ import { isLiked } from "@/lib/utils";
 
 
 const PostStats = ({post,userId} : PostStatsProps) => {
-    const likesList = post.likes.map((user:Models.Document) => user.$id);
+    const likesList = post.likes.map((user:Models.Document) => user?.$id);
 
     const [likes,setLikes] = useState(likesList);
    
@@ -20,7 +20,7 @@ const PostStats = ({post,userId} : PostStatsProps) => {
     const {data: currentUser} = useGetCurrentUser();
     const [isSaved,setIsSaved] = useState(false);
 
-    const savedPostRecord = currentUser?.save.find((record: Models.Document) => record.post.$id === post.$id);
+    const savedPostRecord = currentUser?.save.find((record: Models.Document) => record.post?.$id === post?.$id);
 
     useEffect(()=>{
         setIsSaved(savedPostRecord?true:false);
@@ -36,7 +36,7 @@ const PostStats = ({post,userId} : PostStatsProps) => {
             newLikes.push(userId);
         }
         setLikes(newLikes);
-        likePost({postId: post.$id, likesArray: newLikes});
+        likePost({postId: post?.$id, likesArray: newLikes});
     }
 
 
