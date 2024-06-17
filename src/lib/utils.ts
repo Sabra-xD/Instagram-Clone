@@ -6,8 +6,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 
-export function timeAgo(dateString: string): string {
-  const givenDate = new Date(dateString);
+export function timeAgo(dateString?: string): string {
+  const givenDate = new Date(dateString || "");
   const now = new Date();
 
   const diffInMs = now.getTime() - givenDate.getTime();
