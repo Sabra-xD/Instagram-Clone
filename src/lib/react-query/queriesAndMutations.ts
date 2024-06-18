@@ -4,7 +4,7 @@ useMutation,
     useQuery,
 useQueryClient
 } from '@tanstack/react-query'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, likePost, logOut, savePost, searchPosts, signInAccount, updatePost } from '../appwrite/api'
+import { createPost, createUserAccount, deletePost, deleteSavedPost, getAllUsers, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getSavedPosts, likePost, logOut, savePost, searchPosts, signInAccount, updatePost } from '../appwrite/api'
 import { INewPost, INewUser, IUpdatePost } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
 
@@ -192,5 +192,22 @@ export const useSerachPosts = (searchTerm: string) => {
         queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
         queryFn: () => searchPosts(searchTerm),
         enabled: !!searchTerm, //When does it automatically refetches?
+    })
+}
+
+
+
+export const useGetSavedPosts = () => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_SAVED_POSTS],
+        queryFn: getSavedPosts,
+    })
+}
+
+
+export const useGetAllUsers = () => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_ALL_USERS],
+        queryFn: getAllUsers,
     })
 }

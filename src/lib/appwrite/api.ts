@@ -74,6 +74,7 @@ export async function signInAccount(user:{email:string; password:string}){
 export async function getCurrentUser(){
     try{
         const currentAccount = await account.get();
+        console.log("The current Account is: ",currentAccount);
         if(!currentAccount) throw Error;
         const currentUser= await databases.listDocuments(
             appwriteConfig.databaseId,
@@ -82,7 +83,8 @@ export async function getCurrentUser(){
         )
 
         if(!currentUser) throw Error;
-        // store.dispatch(setUser(currentUser));
+        
+        console.log("The current user is: ",currentUser.documents[0]);
 
         return currentUser.documents[0];
 
@@ -397,3 +399,55 @@ export async function searchPosts(searchTerm:string){
 }
 
 
+export async function getSavedPosts(){
+
+    try{
+        
+        const currentUser = await getCurrentUser();
+
+        if(!currentUser) throw Error;
+        const posts = await databases.listDocuments(appwriteConfig.databaseId,
+            appwriteConfig.savesCollectionId,
+            [Query.equal("user",currentUser.$id)]
+        )
+
+        if(!posts) throw Error;
+
+        const postList = [];
+        for (const info of posts.documents) {
+            postList.push(info.post);
+        }
+
+        console.log("The postList is: ",postList);
+
+        if(!postList) throw Error;
+
+
+        return postList;
+
+    }catch(error){
+        console.log(error);
+    }
+
+
+}
+
+
+export async function getAllUsers(){
+    try{
+
+        const currentAccount = await account.get();
+        if(!currentAccount) throw Error;
+
+        const users = await databases.listDocuments(appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            [Query.notEqual("accountId",currentAccount.$id), Query.orderDesc("$createdAt"), Query.limit(10)])
+
+        
+        console.log("The users we found are: ",users);
+
+        return users.documents;
+    }catch(error){
+        console.log(error);
+    }
+}
