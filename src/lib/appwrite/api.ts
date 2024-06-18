@@ -354,7 +354,6 @@ export async function deletePost(postId: string, imageId: string){
 
 
 //Understand this function better
-
 export async function getInfinitePosts({pageParam} : {pageParam:number}){
   
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -447,6 +446,22 @@ export async function getAllUsers(){
         console.log("The users we found are: ",users);
 
         return users.documents;
+    }catch(error){
+        console.log(error);
+    }
+}
+
+
+export async function getUserById(id:string){
+    try{
+        const user = await databases.getDocument(appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            id
+        )
+        if(!user) throw Error;
+
+        return user;
+
     }catch(error){
         console.log(error);
     }

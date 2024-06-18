@@ -7,12 +7,13 @@ const UserCard = ({user}:{user:Models.Document}) => {
 
   const handleFollow = (e:React.MouseEvent) => {
     e.stopPropagation();
+    //ToDo
     //Handle the Follow accordingly if we already follow that user or not.
     //Keep in mind, we are displaying the first 10 users which is not the best thing to do.
   }
 
   return (
-    
+
     <Link to={`/profile/${user.$id}`} className="user-card">
         <div className="flex-center flex-col gap-5">
             <img src={user.imageUrl || "/assets/icons/profile-placeholder.svg"} width={90} height={90} className="rounded-full"/>

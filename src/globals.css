@@ -181,6 +181,10 @@
     @apply flex-center gap-3 py-4 w-48 bg-dark-2  transition flex-1 xl:flex-initial;
   }
 
+  .profile-text{
+    @apply text-[14px] font-semibold leading-[140%] tracking-tighter text-fuchsia-500
+  }
+
   /* Saved */
   .saved-container {
     @apply flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-5 md:p-14 custom-scrollbar;
@@ -272,6 +276,10 @@
 
   .shad-button_dark_4 {
     @apply h-12 bg-dark-4 px-5 text-light-1 flex gap-2 !important;
+  }
+
+  .shad-edit-button_dark_2 {
+    @apply h-10 bg-dark-4 px-5 text-light-1 flex gap-2 !important;
   }
 
   .shad-button_ghost {

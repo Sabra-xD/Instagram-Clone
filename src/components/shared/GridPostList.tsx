@@ -18,6 +18,8 @@ const GridPostList = ({
   showStats = true,
 }: GridPostListProps) => {
   const user = useSelector(selectUser);
+
+  console.log("The posts we received in the GridPostList: ",posts);
   return (
     <ul className="grid-container">
       {posts.map((post) => (
