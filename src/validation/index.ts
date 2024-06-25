@@ -21,3 +21,13 @@ export const PostValidation = z.object({
 })
 
 
+export const ProfileValidation = z.object({
+  name: z.string().min(5).max(100),
+  username: z.string().min(5).max(100),
+  email: z.string().email(),
+  bio: z.string().min(5).max(2500),
+  file: z.custom<File[]>(),
+})
+
+
+

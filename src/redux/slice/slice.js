@@ -25,7 +25,6 @@ export const storeSlice = createSlice({
     initialState: INITIAL_STATE,
     reducers: {
         setUser: (state,action) => {
-            console.log("The action payload we got is: ",action.payload);
             state.user = action.payload;
         },
         setIsLoading: (state,action)=>{
@@ -33,7 +32,6 @@ export const storeSlice = createSlice({
 
         },
         setIsAuthenticated: (state,action)=>{
-            console.log("The action.payload is: ",action.payload);
             state.isAuthenticated = action.payload;
         },
         resetStates: (state,action)=>{

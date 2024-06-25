@@ -1,10 +1,9 @@
-import { INewPost, INewUser, IUpdatePost} from "@/types";
+import { INewPost, INewUser, IUpdatePost, IUpdateUser} from "@/types";
 import { account, appwriteConfig, avatars, databases, storage } from "./config";
 import { ID, ImageGravity, Query } from "appwrite";
 
 
 export async function createUserAccount(user: INewUser){
-    console.log(user);
     try{
         const newAccount = await account.create(
             ID.unique(),
@@ -29,7 +28,7 @@ export async function createUserAccount(user: INewUser){
         return newUser;
 
     }catch(error){
-        console.log("Error in the createUSerAccount: ",error);
+        console.log(error);
 
     }
 }
@@ -49,7 +48,6 @@ export async function saveUserToDB(user: {
             ID.unique(),
             user
         );
-        console.log("The user saved to DB: ",newUser);
         return newUser;
     }catch(error){
         console.log(error);
@@ -62,7 +60,6 @@ export async function signInAccount(user:{email:string; password:string}){
 
     try{
         const session = await account.createEmailPasswordSession(user.email,user.password);
-        console.log("The current session is: ",session);
         return session;
     }catch(error){
         console.log(error);
@@ -74,7 +71,6 @@ export async function signInAccount(user:{email:string; password:string}){
 export async function getCurrentUser(){
     try{
         const currentAccount = await account.get();
-        console.log("The current Account is: ",currentAccount);
         if(!currentAccount) throw Error;
         const currentUser= await databases.listDocuments(
             appwriteConfig.databaseId,
@@ -84,7 +80,6 @@ export async function getCurrentUser(){
 
         if(!currentUser) throw Error;
         
-        console.log("The current user is: ",currentUser.documents[0]);
 
         return currentUser.documents[0];
 
@@ -97,12 +92,10 @@ export async function getCurrentUser(){
 
 export async function logOut(){
     try{
-        console.log("Logging out...")
         await account.deleteSession('current');
         localStorage.clear();
-        console.log("Logged out..");
     }catch(error){
-        console.log("Error in the logOut: ",error);
+        console.log(error);
     }
 }
 
@@ -192,7 +185,6 @@ export async function getFilePreview(fileId: string){
             ImageGravity.Top,
             100,
             );
-           console.log("The url we got from the function is: ",fileUrl);
             return fileUrl
     }catch(error){
         console.log(error);
@@ -268,7 +260,6 @@ export async function getPostById(postId:string){
     try{
         const post = await databases.getDocument(appwriteConfig.databaseId,appwriteConfig.postCollectionId,postId);
         if(!post) throw Error;
-        console.log(" The post insid ethe getPostByID: ", post);
         return post;
     }catch(error){
         console.log(error);
@@ -324,7 +315,6 @@ export async function updatePost(post: IUpdatePost){
         throw Error;
     }
 
-    console.log("The updated post is: ",updatePost);
 
     return updatedPost;
 
@@ -333,6 +323,59 @@ export async function updatePost(post: IUpdatePost){
    }
 }
 
+
+
+export async function updateUser(user: IUpdateUser){
+    const hasFileChanged = user.file?.length > 0;
+    let image = {
+        imageUrl: user?.imageUrl,
+        imageId: user?.imageId,
+    }
+
+
+    try{
+
+        if(hasFileChanged){
+            const uploadedFile = await uploadFile(user.file[0]);
+            if(!uploadedFile) throw Error;
+            const fileUrl = await getFilePreview(uploadedFile.$id);
+            if(!fileUrl){
+                deleteFile(uploadedFile.$id);
+                throw Error;
+            }
+
+            image= {
+                ...image,
+                imageUrl: fileUrl,
+                imageId: uploadedFile.$id,
+            }
+        }
+
+
+        const updateUser = await databases.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            user.userId,
+            {
+                name: user.name,
+                username: user.username,
+                bio: user.bio,
+                email: user.email,
+                imageUrl: image.imageUrl,
+                imageId: image.imageId,
+            }
+        );
+
+        if(!updateUser){
+            throw Error;
+        }
+        return updateUser;
+
+    }catch(error){
+        console.log(error);
+    }
+
+}
 
 export async function deletePost(postId: string, imageId: string){
 
@@ -417,7 +460,6 @@ export async function getSavedPosts(){
             postList.push(info.post);
         }
 
-        console.log("The postList is: ",postList);
 
         if(!postList) throw Error;
 
@@ -443,7 +485,6 @@ export async function getAllUsers(){
             [Query.notEqual("accountId",currentAccount.$id), Query.orderDesc("$createdAt"), Query.limit(10)])
 
         
-        console.log("The users we found are: ",users);
 
         return users.documents;
     }catch(error){

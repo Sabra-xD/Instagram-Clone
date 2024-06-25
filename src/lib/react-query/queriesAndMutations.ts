@@ -4,13 +4,11 @@ useMutation,
     useQuery,
 useQueryClient
 } from '@tanstack/react-query'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, getAllUsers, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getSavedPosts, getUserById, likePost, logOut, savePost, searchPosts, signInAccount, updatePost } from '../appwrite/api'
-import { INewPost, INewUser, IUpdatePost } from '@/types'
+import { createPost, createUserAccount, deletePost, deleteSavedPost, getAllUsers, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getSavedPosts, getUserById, likePost, logOut, savePost, searchPosts, signInAccount, updatePost, updateUser } from '../appwrite/api'
+import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
 
-//Simply for data fetch and mutation, caching and infinite scroll.
 
-//What does this do?
 export const useCreateUserAccountMutation = () => {
     return useMutation({
         mutationFn: (user: INewUser) => createUserAccount(user)
@@ -84,8 +82,7 @@ export const useLikePost = () => {
 export const useSavePost = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({postId, userId} : {postId: string, userId: string}) => savePost(postId,userId),
-       
+        mutationFn: ({postId, userId} : {postId: string, userId: string}) => savePost(postId,userId),   
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
@@ -144,7 +141,6 @@ export const useUpdatePost = () =>{
         mutationFn: (post:IUpdatePost) => updatePost(post),
         onSuccess: (data) => {
                 queryClient.invalidateQueries({
-                    //The data.$id is used for locating an exact instance of get post by id and invalidating that.
                     queryKey: [QUERY_KEYS.GET_POST_BY_ID, data?.$id],
                 })
             }
@@ -163,9 +159,6 @@ export const useDeletePost = () =>{
             }
     })
 }
-
-
-
 
 
 export const useGetPosts = () => {
@@ -196,7 +189,6 @@ export const useSerachPosts = (searchTerm: string) => {
 }
 
 
-
 export const useGetSavedPosts = () => {
     return useQuery({
         queryKey: [QUERY_KEYS.GET_SAVED_POSTS],
@@ -218,5 +210,18 @@ export const useGetUserById = (id:string) => {
         queryKey: [QUERY_KEYS.GET_USER_BY_ID,id],
         queryFn: () => getUserById(id),
         enabled: !!id,
+    })
+}
+
+
+export const useUpdateUser = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (user: IUpdateUser) => updateUser(user),
+        onSuccess: (data) => {
+                queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_CURRENT_USER,QUERY_KEYS.GET_USER_BY_ID,data?.$id],
+            });
+        }
     })
 }

@@ -1,7 +1,7 @@
 import { Models } from "appwrite";
 import React from "react";
 
-export type INavLink = {
+  export type INavLink = {
     imgURL: string;
     route: string;
     label: string;
@@ -10,6 +10,8 @@ export type INavLink = {
   export type IUpdateUser = {
     userId: string;
     name: string;
+    username: string;
+    email: string;
     bio: string;
     imageId: string;
     imageUrl: URL | string;

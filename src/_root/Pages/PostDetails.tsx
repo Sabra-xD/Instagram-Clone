@@ -1,8 +1,9 @@
 import PostStats from "@/components/shared/PostStats";
 import { Button } from "@/components/ui/button";
-import { useGetPostById, useDeletePost } from "@/lib/react-query/queriesAndMutations";
+import { useGetPostById, useDeletePost, useGetCurrentUser, useDeleteSavePost } from "@/lib/react-query/queriesAndMutations";
 import { timeAgo } from "@/lib/utils";
 import { selectUser } from "@/redux/slice/slice";
+import { Models } from "appwrite";
 import { Loader } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useParams, Link, useNavigate } from "react-router-dom";
@@ -14,11 +15,21 @@ const PostDetails = () => {
   const user = useSelector(selectUser);
   const { data: post, isLoading } = useGetPostById(id);
   const { mutate: deletePost } = useDeletePost();
+  const {mutateAsync: deleteSavedPost, isPending: isDeleting} = useDeleteSavePost();
+  const {data: currentUser} = useGetCurrentUser();
+  const savedPostRecord = currentUser?.save.find((record: Models.Document) => record.post?.$id === post?.$id);
 
 
-  const handleDeletePost = () => {
-    deletePost({ postId: id || "", imageId: post?.imageId });
-    navigate(-1);
+
+  const handleDeletePost = async() => {
+    if(savedPostRecord){
+     await deleteSavedPost(savedPostRecord.$id);
+    }
+    if(!isDeleting){
+      deletePost({ postId: id || "", imageId: post?.imageId });
+      navigate("/");
+    }
+
   };
 
   return (

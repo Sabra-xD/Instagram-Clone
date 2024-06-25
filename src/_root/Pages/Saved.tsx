@@ -6,6 +6,7 @@ const Saved = () => {
 
   const {data: posts,isPending: isLoadingSavedPosts} = useGetSavedPosts();
 
+  console.log("The posts are: ",posts, "The isLoadingSavedPosts: ",isLoadingSavedPosts);
 
 
   return (

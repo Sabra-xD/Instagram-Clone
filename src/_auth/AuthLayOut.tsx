@@ -1,15 +1,12 @@
 import Spinner from "@/components/ui/spinner";
 import useSelectorWithDelay from "@/lib/customHooks/useSelectorWithDelay";
 // import { selectIsAuthenticated } from "@/redux/slice/slice";
-import { useEffect } from "react";
 // import { useSelector } from "react-redux";
 import { Outlet,Navigate } from "react-router-dom";
 const AuthLayOut = () => { 
   // const isAuthed=false;
   const {isAuthed, timerExpired}= useSelectorWithDelay(); // Use the selector
-  useEffect(()=>{
-    console.log("The value of isAuthenticated: ",isAuthed);
-  })
+
 
   return (
     <>

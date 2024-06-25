@@ -20,14 +20,11 @@ const App = () => {
         const fetchData = async () => {
             const user = await getCurrentUser();
             if (user) {
-                console.log("We re-fetched the user: ", user);
-                //We re-fetch the user almost with every refresh of any page.
-                //This is how we set it to be 
                 dispatch(setUser(user));
                 dispatch(setIsAuthenticated(true));
             }
         };
-    
+        
         fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

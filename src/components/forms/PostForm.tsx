@@ -26,7 +26,6 @@ const PostForm = ({action,post} : PostFormProps) => {
 
   const {mutateAsync: createPost, isPending: isLoading} = useCreatePost();
   const {mutateAsync: updatePost, isPending: isUpdated} = useUpdatePost();
-
   const {mutateAsync: deletePost, isPending: isDeleting } = useDeletePost();
 
   const {toast} = useToast();
@@ -68,15 +67,12 @@ const PostForm = ({action,post} : PostFormProps) => {
                 });
 
                 if(!updatedPost){
-                    toast({
-                      title:'Something went wrong, try again'
-                    })
+                  return  toast({
+                    title:'Something went wrong, try again'
+                  })
                 }
-
               }
-
             }
-            
               navigator('/');
        }
     

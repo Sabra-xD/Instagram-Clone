@@ -14,9 +14,7 @@ const Topbar = () => {
     const dispatch = useDispatch();
 
     useEffect(()=>{
-        console.log("The value of isSucess is:  ",isSuccess);
         if(isSuccess){
-            //Or we can just create a function that resets ALL the information in the state. Literally clear the shit out of it.
             dispatch(setIsAuthenticated(false));
             navigator("/sign-in");
         }

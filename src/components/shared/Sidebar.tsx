@@ -18,12 +18,11 @@ const Sidebar = () => {
 
     useEffect(()=>{
         if(isSuccess){
-            //Or we can just create a function that resets ALL the information in the state. Literally clear the shit out of it.
             dispatch(setIsAuthenticated(false));
             navigator("/sign-in");
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[isSuccess]);
+    },[isSuccess,user]);
   return (
     <nav className="leftsidebar">
     
@@ -34,7 +33,6 @@ const Sidebar = () => {
                 <img src="/assets/images/logo.svg" alt="logo" width={170} height={36}/>
             </Link>
 
-        
                 <Link to={`/profile/${user.$id}`} className="flex-center gap-3">
                     <img src={user.imageUrl || 'assets/images/profile-paceholder.svg'} alt="profile" className="h-14 w-14 rounded-full"/>
                     
@@ -48,7 +46,6 @@ const Sidebar = () => {
 
                 <ul className="flex flex-col gap-6">
                     {sidebarLinks.map((link:INavLink) => {
-                        //Pathname literally erpresents which page am I on.
                         const isActive = pathname===link.route;
 
                         return(
@@ -63,9 +60,6 @@ const Sidebar = () => {
                         )
                     })}
                 </ul>
-
-
-
 
         </div>
 
