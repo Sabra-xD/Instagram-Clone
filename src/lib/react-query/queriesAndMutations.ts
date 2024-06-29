@@ -4,7 +4,7 @@ useMutation,
     useQuery,
 useQueryClient
 } from '@tanstack/react-query'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, getAllUsers, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getSavedPosts, getUserById, likePost, logOut, savePost, searchPosts, signInAccount, updatePost, updateUser } from '../appwrite/api'
+import { createPost, createUserAccount, deletePost, deleteSavedPost, getAllUsers, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getRelatedPosts, getSavedPosts, getUserById, likePost, logOut, savePost, searchPosts, signInAccount, updatePost, updateUser } from '../appwrite/api'
 import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
 
@@ -131,6 +131,7 @@ export const useGetPostById = (postId?:string) => {
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
         queryFn: () => getPostById(postId ? postId : ""),
         enabled: !!postId,
+        
       })
 }
 
@@ -225,3 +226,10 @@ export const useUpdateUser = () => {
         }
     })
 }
+
+
+export const useGetRelatedPosts = (userId: string, postId: string) => {  
+     return useQuery({
+        queryKey: [QUERY_KEYS.GET_RELATED_POSTS,userId],
+        queryFn: () => getRelatedPosts(userId,postId), 
+})}

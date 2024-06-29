@@ -239,6 +239,10 @@
     @apply h-64 xs:h-[400px] lg:h-[450px] w-full rounded-[24px] object-cover mb-5;
   }
 
+  .post_img {
+    @apply h-80 w-full rounded-[24px] object-cover mb-5;
+  }
+
   /* Topbar */
   .topbar {
     @apply sticky top-0 z-50 md:hidden bg-dark-2 w-full;

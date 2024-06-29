@@ -1,6 +1,7 @@
+import PostImage from "@/components/shared/PostImage";
 import PostStats from "@/components/shared/PostStats";
 import { Button } from "@/components/ui/button";
-import { useGetPostById, useDeletePost, useGetCurrentUser, useDeleteSavePost } from "@/lib/react-query/queriesAndMutations";
+import { useGetPostById, useDeletePost, useGetCurrentUser, useDeleteSavePost, useGetRelatedPosts } from "@/lib/react-query/queriesAndMutations";
 import { timeAgo } from "@/lib/utils";
 import { selectUser } from "@/redux/slice/slice";
 import { Models } from "appwrite";
@@ -18,6 +19,7 @@ const PostDetails = () => {
   const {mutateAsync: deleteSavedPost, isPending: isDeleting} = useDeleteSavePost();
   const {data: currentUser} = useGetCurrentUser();
   const savedPostRecord = currentUser?.save.find((record: Models.Document) => record.post?.$id === post?.$id);
+  const {data: relatedPosts, isPending: iFetchingRelated} = useGetRelatedPosts(post?.creator.$id || "",post?.$id || "");
 
 
 
@@ -115,11 +117,11 @@ const PostDetails = () => {
               </div>
             </div>
 
-            <hr className="border w-full border-dark-4/80" />
-
-            <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
+            <div className="flex flex-col w-full small-medium lg:base-regular">
               <p>{post?.caption}</p>
+              
               <ul className="flex gap-1 mt-2">
+            
                 {post?.tags.map((tag: string, index: string) => (
                   <li
                     key={`${tag}${index}`}
@@ -127,23 +129,78 @@ const PostDetails = () => {
                     #{tag}
                   </li>
                 ))}
+
               </ul>
+
+              <hr className="border w-full border-dark-4/80" />
+            
             </div>
 
+            <div className="flex flex-col flex-1">
+
+                <div className="flex w-full gap-2 p-1">
+                  <Link
+                      to={`/profile/${post?.creator.$id}`}
+                      className="flex items-center gap-3">
+                        <img
+                        src={
+                          post?.creator.imageUrl ||
+                          "/assets/icons/profile-placeholder.svg"
+                        }
+                          alt="creator"
+                        className="w-8 h-8 lg:w-10 lg:h-10 rounded-full"/>  
+                  </Link>
+
+                  <div className="flex gap-1 flex-col w-full h-">
+
+                    <p className="text-light-3">
+                      {post?.creator.name}
+                    </p>
+
+                    <p className="overflow-ellipsis w-2">
+                        adwawdawdddddddddddddddddddddddaawdadw MOSTAFA
+                        dwadawdaaaaaaaaaawda
+                    </p>
+
+                      
+                      
+
+                  </div>
+
+
+
+                </div>
+
+
+            </div>
+
+            
+
+          
+
             <div className="w-full">
-              <PostStats post={post} userId={user.id} />
+              <PostStats post={post} userId={user.$id} />
             </div>
           </div>
         </div>
       )}
+      {
+        iFetchingRelated ? (<Loader />) : (<div className="w-full max-w-5xl">
+          <hr className="border w-full border-dark-4/80" />
+          <h3 className="body-bold md:h3-bold w-full my-10">
+            More Related Posts
+          </h3>
+          <div className="flex flex-wrap w-full gap-x-10 md:gap-x-5">
+             {relatedPosts?.documents.map((post) => (
+             <div key={post.$id} className="w-full sm:w-1/3 md:w-1/3 lg:w-1/4">
+               <PostImage post={post} />
+             </div>
+          ))}
+          </div>
+       
+        </div>)
+      }
 
-      <div className="w-full max-w-5xl">
-        <hr className="border w-full border-dark-4/80" />
-
-        <h3 className="body-bold md:h3-bold w-full my-10">
-          More Related Posts
-        </h3>
-      </div>
     </div>
   );
 };

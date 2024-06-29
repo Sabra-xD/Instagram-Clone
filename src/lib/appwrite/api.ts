@@ -507,3 +507,20 @@ export async function getUserById(id:string){
         console.log(error);
     }
 }
+
+
+export async function getRelatedPosts(userId:string, currentPost: string){
+
+
+    try{
+        const relatedPosts = await databases.listDocuments(appwriteConfig.databaseId,
+            appwriteConfig.postCollectionId,
+            [Query.equal('creator',userId), Query.notEqual("$id",currentPost)]
+        );
+        return relatedPosts;
+
+    }catch(error){
+        console.log(error);
+    }
+
+}
