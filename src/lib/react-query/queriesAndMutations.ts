@@ -4,7 +4,7 @@ useMutation,
     useQuery,
 useQueryClient
 } from '@tanstack/react-query'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, getAllUsers, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getRelatedPosts, getSavedPosts, getUserById, likePost, logOut, savePost, searchPosts, signInAccount, updatePost, updateUser } from '../appwrite/api'
+import { createPost, createUserAccount, deletePost, deleteSavedPost, getAllUsers, getCurrentUser, getInfinitePosts, getPostById, getPostComments, getRecentPosts, getRelatedPosts, getSavedPosts, getUserById, likePost, logOut, savePost, searchPosts, signInAccount, updatePost, updateUser, addComment } from '../appwrite/api'
 import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
 
@@ -233,3 +233,24 @@ export const useGetRelatedPosts = (userId: string, postId: string) => {
         queryKey: [QUERY_KEYS.GET_RELATED_POSTS,userId],
         queryFn: () => getRelatedPosts(userId,postId), 
 })}
+
+
+export const useGetPostComments = (postId: string) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_POST_COMMENTS,postId],
+        queryFn: () => getPostComments(postId)
+    })
+}
+
+
+export const useAddComment = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (postId: string, comment: string) => addComment(postId,comment),
+        onSuccess: () => {
+                queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_POST_COMMENTS,postId],
+            });
+        }
+    })
+}

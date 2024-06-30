@@ -72,6 +72,16 @@
     @apply text-[10px] font-medium leading-[140%];
   }
 
+  
+  .comment-body {
+    @apply text-[12px] font-semibold leading-[140%];
+  }
+
+  .comment-header {
+    @apply text-[14px] font-semibold leading-[140%];
+  }
+
+
   /* UTILITIES */
   .invert-white {
     @apply invert brightness-0 transition;

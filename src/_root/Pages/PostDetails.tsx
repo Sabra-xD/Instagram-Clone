@@ -1,14 +1,33 @@
+import Comment from "@/components/shared/Comment";
 import PostImage from "@/components/shared/PostImage";
 import PostStats from "@/components/shared/PostStats";
 import { Button } from "@/components/ui/button";
-import { useGetPostById, useDeletePost, useGetCurrentUser, useDeleteSavePost, useGetRelatedPosts } from "@/lib/react-query/queriesAndMutations";
+import { useGetPostById, useDeletePost, useGetCurrentUser, useDeleteSavePost, useGetRelatedPosts,useAddComment} from "@/lib/react-query/queriesAndMutations";
 import { timeAgo } from "@/lib/utils";
 import { selectUser } from "@/redux/slice/slice";
 import { Models } from "appwrite";
 import { Loader } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 
+
+const formSchema = z.object({
+  comment: z.string().min(2, {
+    comment: "Comment must be at least 2 characters.",
+  }),
+})
+ 
 
 const PostDetails = () => {
   const navigate = useNavigate();
@@ -20,8 +39,23 @@ const PostDetails = () => {
   const {data: currentUser} = useGetCurrentUser();
   const savedPostRecord = currentUser?.save.find((record: Models.Document) => record.post?.$id === post?.$id);
   const {data: relatedPosts, isPending: iFetchingRelated} = useGetRelatedPosts(post?.creator.$id || "",post?.$id || "");
+  //Fix this later because I want to get the post.$id instead but I'm not sure why it assumes it would be undefined.
+  const {mutateAsync: addComment, isPending: isAddingComment} = useAddComment();
 
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      comment: "",
+    },
+  });
+  async function onSubmit(values: z.infer<typeof formSchema>) {
 
+    console.log(values);
+
+    //Do stuff properly now.
+    await addComment(id,values.comment);
+    
+  }
 
   const handleDeletePost = async() => {
     if(savedPostRecord){
@@ -136,50 +170,37 @@ const PostDetails = () => {
             
             </div>
 
-            <div className="flex flex-col flex-1">
-
-                <div className="flex w-full gap-2 p-1">
-                  <Link
-                      to={`/profile/${post?.creator.$id}`}
-                      className="flex items-center gap-3">
-                        <img
-                        src={
-                          post?.creator.imageUrl ||
-                          "/assets/icons/profile-placeholder.svg"
-                        }
-                          alt="creator"
-                        className="w-8 h-8 lg:w-10 lg:h-10 rounded-full"/>  
-                  </Link>
-
-                  <div className="flex gap-1 flex-col w-full h-">
-
-                    <p className="text-light-3">
-                      {post?.creator.name}
-                    </p>
-
-                    <p className="overflow-ellipsis w-2">
-                        adwawdawdddddddddddddddddddddddaawdadw MOSTAFA
-                        dwadawdaaaaaaaaaawda
-                    </p>
-
-                      
-                      
-
-                  </div>
-
-
-
-                </div>
-
-
-            </div>
-
-            
-
-          
+            {
+              post.comment.map((comment)=>{
+                return ( <div className="flex flex-col flex-1 w-full gap-3" key={comment.$id}>
+                            <Comment user={post?.creator || ""} comment={comment.content}/>
+                          </div>)
+              })
+            }
+             
+              
 
             <div className="w-full">
               <PostStats post={post} userId={user.$id} />
+              <Form {...form}>
+             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        
+              <FormField
+                control={form.control}
+                name="comment"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input type="text" className="shad-input mt-2" placeholder="Write your comment..." {...field} />
+                    </FormControl>
+                    <FormMessage className="shad-form_message" />
+                </FormItem>
+        )}
+      />
+
+      </form>
+    </Form>
+    
             </div>
           </div>
         </div>
