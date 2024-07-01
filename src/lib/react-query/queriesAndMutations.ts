@@ -246,10 +246,11 @@ export const useGetPostComments = (postId: string) => {
 export const useAddComment = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (postId: string, comment: string) => addComment(postId,comment),
-        onSuccess: () => {
+        mutationFn: ({postId,content}:{postId:string, content:string}) => addComment(postId, content),
+        onSuccess: (data,variables) => {
+            console.log("The data is: ",data, "The variables are: ",variables);
                 queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_POST_COMMENTS,postId],
+                queryKey: [QUERY_KEYS.GET_POST_BY_ID,variables?.postId],
             });
         }
     })

@@ -537,13 +537,15 @@ export async function addComment(postId: string,content: string){
         
         if(!currentUser) throw Error;
 
+        console.log("The current user id is: ",currentUser.$id, "The post id is: ",postId , "The content is: ",content);
+
         const updatedComment = await databases.createDocument(
             appwriteConfig.databaseId,
             appwriteConfig.commentsCollectionId,
             ID.unique(),
             {
-                user: currentUser,
-                post: postId,
+                users: currentUser.$id,
+                posts: postId,
                 content: content,
             }
         )
