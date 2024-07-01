@@ -1,6 +1,7 @@
-import { useLikeComment } from "@/lib/react-query/queriesAndMutations";
+import { useDeleteComment, useLikeComment } from "@/lib/react-query/queriesAndMutations";
 import { selectUser } from "@/redux/slice/slice";
 import { Models } from "appwrite"
+import { Loader } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom"
@@ -21,6 +22,7 @@ const Comment = ({user,comment}:commentType) => {
   const likesList = comment.likes.map((user:Models.Document) => user?.$id);
 
   const {mutateAsync: likeComment} = useLikeComment();
+  const {mutateAsync: deleteComment, isPending: isDeleting} = useDeleteComment();
   const [likes,setLikes] = useState(likesList);
 
   const handleLike = (e:React.MouseEvent) => {
@@ -34,6 +36,14 @@ const Comment = ({user,comment}:commentType) => {
       }
       setLikes(newLikes);
       likeComment({commentId: comment.$id, likesArray: newLikes});
+
+  }
+
+
+  const handleDelete = (e:React.MouseEvent) => {
+    e.stopPropagation();
+    deleteComment(comment.$id)
+
 
   }
 
@@ -68,11 +78,25 @@ const Comment = ({user,comment}:commentType) => {
             }
             />
 
-            <p className="small-medium lg:base-medium">
-                {likes.length}
+            <p className="tiny-medium">
+                {likes.length > 0 && likes.length}
             </p>
 
         </div>
+        {
+          currUser.$id === user.$id &&( isDeleting ? <Loader />:  <div className="flex flex-col items-center gap-1 mr-5">
+          <img src='/assets/icons/delete.svg'
+           alt="like" width={20} height={20} 
+          className="cursor-pointer"
+          onClick={handleDelete}
+          />
+
+      </div>
+      )
+
+        }
+      
+
 
     
 

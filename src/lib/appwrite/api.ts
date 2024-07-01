@@ -575,3 +575,18 @@ export async function likeComment(commentId: string,likesArray: string[]){
         console.log(error);
     }
 }
+
+export async function deleteComment(commentId:string){
+    try{
+        const deletedComment = await databases.deleteDocument(appwriteConfig.databaseId,
+            appwriteConfig.commentsCollectionId,
+            commentId,
+        );
+
+        if(!deletedComment) throw Error;
+
+        return deletedComment;
+    }catch(error){
+        console.log(error);
+    }
+}
