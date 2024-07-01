@@ -4,7 +4,7 @@ useMutation,
     useQuery,
 useQueryClient
 } from '@tanstack/react-query'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, getAllUsers, getCurrentUser, getInfinitePosts, getPostById, getPostComments, getRecentPosts, getRelatedPosts, getSavedPosts, getUserById, likePost, logOut, savePost, searchPosts, signInAccount, updatePost, updateUser, addComment } from '../appwrite/api'
+import { createPost, createUserAccount, deletePost, deleteSavedPost, getAllUsers, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getRelatedPosts, getSavedPosts, getUserById, likePost, logOut, savePost, searchPosts, signInAccount, updatePost, updateUser, addComment, likeComment } from '../appwrite/api'
 import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
 
@@ -235,22 +235,30 @@ export const useGetRelatedPosts = (userId: string, postId: string) => {
 })}
 
 
-export const useGetPostComments = (postId: string) => {
-    return useQuery({
-        queryKey: [QUERY_KEYS.GET_POST_COMMENTS,postId],
-        queryFn: () => getPostComments(postId)
-    })
-}
-
 
 export const useAddComment = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({postId,content}:{postId:string, content:string}) => addComment(postId, content),
         onSuccess: (data,variables) => {
-            console.log("The data is: ",data, "The variables are: ",variables);
+            console.log("The data and variables: ",data , variables);
                 queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_POST_BY_ID,variables?.postId],
+                queryKey: [QUERY_KEYS.GET_POST_BY_ID,variables.postId],
+            });
+        }
+    })
+}
+
+
+
+export const useLikeComment = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({commentId,likesArray} : {commentId: string, likesArray: string[]}) => likeComment(commentId,likesArray),
+        onSuccess: (data,variables) => {
+            console.log("The  is: ",data, "The variables are: ",variables);
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_POST_BY_ID],
             });
         }
     })

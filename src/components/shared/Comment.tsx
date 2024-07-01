@@ -1,12 +1,42 @@
+import { useLikeComment } from "@/lib/react-query/queriesAndMutations";
+import { selectUser } from "@/redux/slice/slice";
 import { Models } from "appwrite"
+import { useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom"
 
 type commentType = {
     user: Models.Document,
-    comment: string,
+    comment: Models.Document,
 }
 
+const isLiked = (userId:string,likesList: string[]) => {
+  if(likesList.includes(userId)) return true;
+  return false;
+}
+
+
 const Comment = ({user,comment}:commentType) => {
+  const currUser = useSelector(selectUser);
+  const likesList = comment.likes.map((user:Models.Document) => user?.$id);
+
+  const {mutateAsync: likeComment} = useLikeComment();
+  const [likes,setLikes] = useState(likesList);
+
+  const handleLike = (e:React.MouseEvent) => {
+    e.stopPropagation();
+    let newLikes = [...likesList];
+    const hasLiked = newLikes.includes(user.$id); 
+    if(hasLiked){
+      newLikes = newLikes.filter((id)=>id!==user.$id); 
+    }else{
+      newLikes.push(user.$id);
+      }
+      setLikes(newLikes);
+      likeComment({commentId: comment.$id, likesArray: newLikes});
+
+  }
+
   return (
     <div className="flex w-full gap-2">
     <Link to={`/profile/${user.$id}`} className="flex items-start gap-3">
@@ -24,10 +54,27 @@ const Comment = ({user,comment}:commentType) => {
       <p className="comment-header text-light-3">{user.name}</p>
      
       <div className="comment-body text-ellipsis break-all">
-        {comment}
+        {comment.content}
       </div>
 
     </div>
+
+    <div className="flex flex-col items-center gap-1 mr-5">
+            <img src={ isLiked(currUser.$id,likes) ? '/assets/icons/liked.svg' : '/assets/icons/like.svg'}
+             alt="like" width={20} height={20} 
+            className="cursor-pointer"
+            onClick={
+            handleLike
+            }
+            />
+
+            <p className="small-medium lg:base-medium">
+                {likes.length}
+            </p>
+
+        </div>
+
+    
 
 </div>
 

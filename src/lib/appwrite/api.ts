@@ -260,7 +260,7 @@ export async function getPostById(postId:string){
     try{
         const post = await databases.getDocument(appwriteConfig.databaseId,appwriteConfig.postCollectionId,postId);
         if(!post) throw Error;
-        
+        console.log("The post we got is: ",post);
         
         return post;
     }catch(error){
@@ -549,7 +549,6 @@ export async function addComment(postId: string,content: string){
                 content: content,
             }
         )
-        console.log("The updated comment is: ",updatedComment);
         if(!updatedComment) throw Error;
         return updatedComment
     }catch(error){
@@ -558,36 +557,21 @@ export async function addComment(postId: string,content: string){
 }
 
 
-export async function getPostComments(postId: string){
+export async function likeComment(commentId: string,likesArray: string[]){
 
+    console.log("The commentId is: ",commentId, "The likes array is: ",likesArray);
     try{
-        console.log("The post id is: ",postId);
-        const currentUser = await getCurrentUser();
-
-        if(!currentUser) throw Error;
-  
-        const comments = await databases.listDocuments(appwriteConfig.databaseId,
+     const updatedComment = await databases.updateDocument(appwriteConfig.databaseId,
             appwriteConfig.commentsCollectionId,
-            [Query.equal("posts",postId)]
+            commentId,
+            {
+                likes: likesArray,
+            }
         );
 
-        console.log("The matching comments we got are: ",comments);
-
-        //Here we should return a list of ALL the users, including their comments in a list of objects.
-        return comments;
-
+        if(!updatedComment) throw Error;
+        return updatedComment;
     }catch(error){
         console.log(error);
     }
-
-
 }
-
-
-// export const getUserById = () => {
-//     try{
-
-//     }catch(error){
-//         console.log(error);
-//     }
-// }
