@@ -1,23 +1,55 @@
 import GridPostList from "@/components/shared/GridPostList";
 import Loader from "@/components/shared/Loader";
 import { Button } from "@/components/ui/button";
-import { useGetUserById } from "@/lib/react-query/queriesAndMutations";
+import { useFollowUser, useGetUserById } from "@/lib/react-query/queriesAndMutations";
 import { selectUser } from "@/redux/slice/slice";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 
-//ToDo:
-//Add the Follow Logic.
-//For own user, display a message to guide them to create a new post.
 
 
 const Profile = () => {
   const { id } = useParams();
   const user = useSelector(selectUser);
-
+  
   if (!id) throw Error;
 
   const { data: currentUser, isPending: isLoadingUser } = useGetUserById(id);
+  const {mutateAsync: followController, isPending: isFollowingAction} = useFollowUser();
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followersCount,setFollowersCount] = useState(0);
+  
+  useEffect(()=>{
+    if(currentUser){
+      setIsFollowing(user.following.includes(currentUser.$id));
+      setFollowersCount(currentUser.followers.length);
+    }
+  },[currentUser,user.following]);
+
+  const handleFollow = (e:React.MouseEvent) => {
+    e.stopPropagation();
+    if(!currentUser) return ;
+    
+    let ourUserFollowing = [...user.following];
+    let currentUserFollowers = [...currentUser.followers];
+
+    if(isFollowing){
+      ourUserFollowing = ourUserFollowing.filter((userId:string) => userId!==currentUser.$id);
+      currentUserFollowers = currentUserFollowers.filter((followersId: string) => followersId!==user.$id);
+      setFollowersCount(followersCount-1);
+
+    }else{
+      ourUserFollowing.push(currentUser.$id);
+      currentUserFollowers.push(user.$id);
+      setFollowersCount(followersCount+1);
+    }
+    setIsFollowing(!isFollowing);
+    followController({currentUserId: user.$id,followingArray: ourUserFollowing, targetUserId: currentUser.$id, followersArray: currentUserFollowers});
+  }
+
+
+
 
   return (
     <div className="profile-container">
@@ -49,7 +81,7 @@ const Profile = () => {
                     <div className="flex gap-1 items-center">
                       <p className="profile-text">{currentUser?.posts.length}</p>
                       Post
-                      <p className="profile-text">{currentUser?.posts.length}</p>
+                      <p className="profile-text">{followersCount}</p>
                       Followers
                     </div>
                   </div>
@@ -61,7 +93,9 @@ const Profile = () => {
                 </div>
                 <div>
                   {user.$id !== currentUser?.$id ? (
-                    <Button className="shad-button_primary">Follow</Button>
+                    <Button className="shad-button_primary" onClick={handleFollow}
+                    disabled = {isFollowingAction}
+                    >{isFollowing ? "UnFollow" : "Follow"}</Button>
                   ) : (
                     <Link to={`/update-profile/${user.$id}`} className="flex-center shad-edit-button_dark_2 items-center">
                       <img

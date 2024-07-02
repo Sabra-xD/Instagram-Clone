@@ -8,7 +8,9 @@ import { createSlice } from "@reduxjs/toolkit";
     username: '',
     email: '',
     imageUrl: '',
-    bio: ''
+    bio: '',
+    followers: [],
+    following: [],
 }
 
 const INITIAL_STATE = {

@@ -19,10 +19,9 @@ const GridPostList = ({
 }: GridPostListProps) => {
   const user = useSelector(selectUser);
 
-  console.log("The posts we received in the GridPostList: ",posts);
   return (
     <ul className="grid-container">
-      {posts.map((post) => (
+      {posts.length > 0 ? posts.map((post) => (
         <li key={post.$id} className="relative min-w-80 h-80">
           <Link to={`/posts/${post.$id}`} className="grid-post_link">
             <img
@@ -49,7 +48,7 @@ const GridPostList = ({
             {showStats && <PostStats post={post} userId={user.id} />}
           </div>
         </li>
-      ))}
+      )) : <></>}
     </ul>
   );
 };

@@ -29,11 +29,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 
-// type commentType = {
-//   $id: string;
-//   content: string;
-//   likes: string[];
-// };
+
 
 const formSchema = z.object({
   comment: z.string().min(2, {
@@ -108,9 +104,11 @@ const PostDetails = () => {
         <Loader />
       ) : (
         <div className="post_details-card">
+          
           <img src={post?.imageUrl} alt="creator" className="post_details-img" />
 
           <div className="post_details-info">
+
             <div className="flex-between w-full">
               <Link to={`/profile/${post?.creator.$id}`} className="flex items-center gap-3">
                 <img
@@ -161,16 +159,21 @@ const PostDetails = () => {
               </ul>
 
               <hr className="border w-full border-dark-4/80" />
+              
             </div>
+
+            <div className="flex flex-col gap-3 h-44 w-full overflow-y-scroll custom-scrollbar">
 
             {post.comment.map((comment: Models.Document) => {
 
               return (
-                <div className="flex flex-col flex-1 w-full gap-3" key={comment.$id}>
-                  <Comment user={post?.creator || ""} comment={comment}/>
-                </div>
+                <Comment user={post?.creator || ""} comment={comment}/>
               );
-            })}
+              })}
+
+            </div>
+
+
 
             <div className="w-full">
               <PostStats post={post} userId={user.$id} />

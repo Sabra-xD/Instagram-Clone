@@ -590,3 +590,45 @@ export async function deleteComment(commentId:string){
         console.log(error);
     }
 }
+
+
+export async function searchUsers(userName: string){
+    try{
+        console.log(userName);
+    }catch(error){
+        console.log(error);
+    }
+}
+
+
+export async function followUser(currentUserId: string,followingArray: string[],targetUserId: string ,followersArray: string[]){
+
+    console.log(`currentUserId: ${currentUserId}, followingArray: ${followingArray}, targetUserId: ${targetUserId}, followersArray: ${followersArray}`);
+
+    try{
+        const currUser = await databases.updateDocument(appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            currentUserId,
+            {
+                following: followingArray,
+            }
+        );
+        if(!currUser) throw Error;
+        console.log("The currUser is: ",currUser);
+        const targetUser = await databases.updateDocument(appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            targetUserId,
+            {
+                followers: followersArray,
+            }
+        );
+
+        //It should delete it from the currUser if it throws this error but we are keeping it REAL simple.
+        if(!targetUser) throw Error;
+        console.log("The target user is: ",targetUser);
+        return targetUser;
+
+    }catch(error){
+        console.log(error);
+    }
+}

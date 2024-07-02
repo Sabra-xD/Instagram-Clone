@@ -4,7 +4,7 @@ useMutation,
     useQuery,
 useQueryClient
 } from '@tanstack/react-query'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, getAllUsers, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getRelatedPosts, getSavedPosts, getUserById, likePost, logOut, savePost, searchPosts, signInAccount, updatePost, updateUser, addComment, likeComment, deleteComment } from '../appwrite/api'
+import { createPost, createUserAccount, deletePost, deleteSavedPost, getAllUsers, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getRelatedPosts, getSavedPosts, getUserById, likePost, logOut, savePost, searchPosts, signInAccount, updatePost, updateUser, addComment, likeComment, deleteComment, followUser } from '../appwrite/api'
 import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
 
@@ -278,4 +278,15 @@ export const useDeleteComment = () => {
         }
     })
 
+}
+
+
+export const useFollowUser = () => {
+    return useMutation({
+        mutationFn: ({currentUserId, followingArray, targetUserId, followersArray} : {currentUserId : string , followingArray : string[], targetUserId: string, followersArray: string[]}) => followUser(currentUserId,followingArray,targetUserId,followersArray),
+        onSuccess: (data,variables) =>{
+            //I think we'll be invalidating the getUserById here.
+            console.log("The data and variables inside the onSucess are : ",data, variables);
+        }
+    })
 }
