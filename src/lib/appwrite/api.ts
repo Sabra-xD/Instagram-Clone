@@ -592,9 +592,16 @@ export async function deleteComment(commentId:string){
 }
 
 
-export async function searchUsers(userName: string){
+export async function searchUsers(searchTerm: string){
     try{
-        console.log(userName);
+        const users = await databases.listDocuments(appwriteConfig.databaseId,
+            appwriteConfig.userCollectionId,
+            [Query.search('username',searchTerm)]
+        );
+        
+        if(!users) throw Error;
+
+        return users;
     }catch(error){
         console.log(error);
     }
@@ -632,3 +639,5 @@ export async function followUser(currentUserId: string,followingArray: string[],
         console.log(error);
     }
 }
+
+

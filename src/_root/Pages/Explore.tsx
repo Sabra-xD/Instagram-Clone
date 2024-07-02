@@ -20,6 +20,7 @@ const Explore = () => {
 
   useEffect(()=>{
     if(inView && !searchValue) fetchNextPage();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[inView,searchValue])
 
   if(!posts){
@@ -28,7 +29,6 @@ const Explore = () => {
           </div>
   }
 
-  console.log("The posts we got back in Explore", posts);
 
   const shouldShowSearchResults = searchValue !== "";
   const shouldShowPosts = !shouldShowSearchResults && 

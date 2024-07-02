@@ -4,7 +4,7 @@ useMutation,
     useQuery,
 useQueryClient
 } from '@tanstack/react-query'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, getAllUsers, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getRelatedPosts, getSavedPosts, getUserById, likePost, logOut, savePost, searchPosts, signInAccount, updatePost, updateUser, addComment, likeComment, deleteComment, followUser } from '../appwrite/api'
+import { createPost, createUserAccount, deletePost, deleteSavedPost, getAllUsers, getCurrentUser, getInfinitePosts, getPostById, getRecentPosts, getRelatedPosts, getSavedPosts, getUserById, likePost, logOut, savePost, searchPosts, signInAccount, updatePost, updateUser, addComment, likeComment, deleteComment, followUser, searchUsers } from '../appwrite/api'
 import { INewPost, INewUser, IUpdatePost, IUpdateUser } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
 
@@ -282,11 +282,23 @@ export const useDeleteComment = () => {
 
 
 export const useFollowUser = () => {
+    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({currentUserId, followingArray, targetUserId, followersArray} : {currentUserId : string , followingArray : string[], targetUserId: string, followersArray: string[]}) => followUser(currentUserId,followingArray,targetUserId,followersArray),
         onSuccess: (data,variables) =>{
             //I think we'll be invalidating the getUserById here.
             console.log("The data and variables inside the onSucess are : ",data, variables);
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_USER_BY_ID,data?.$id]
+            })
         }
+    })
+}
+
+export const useSearchUsers = (searchTerm: string) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.SEARCH_USERS, searchTerm],
+        queryFn: () => searchUsers(searchTerm),
+        enabled: !!searchTerm, 
     })
 }

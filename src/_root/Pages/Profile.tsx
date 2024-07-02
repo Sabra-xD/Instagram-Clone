@@ -7,49 +7,49 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 
-
-
 const Profile = () => {
   const { id } = useParams();
   const user = useSelector(selectUser);
-  
-  if (!id) throw Error;
+
+  if (!id) throw new Error("No user ID provided");
 
   const { data: currentUser, isPending: isLoadingUser } = useGetUserById(id);
-  const {mutateAsync: followController, isPending: isFollowingAction} = useFollowUser();
+  const { mutateAsync: followController, isPending: isFollowingAction } = useFollowUser();
   const [isFollowing, setIsFollowing] = useState(false);
-  const [followersCount,setFollowersCount] = useState(0);
-  
-  useEffect(()=>{
-    if(currentUser){
-      setIsFollowing(user.following.includes(currentUser.$id));
+  const [followersCount, setFollowersCount] = useState(0);
+console.log("Tracing the isFollowing: ",isFollowing);
+  useEffect(() => {
+    if (currentUser) {
+      setIsFollowing(currentUser.followers.includes(user.$id));
       setFollowersCount(currentUser.followers.length);
     }
-  },[currentUser,user.following]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, user.following]);
 
-  const handleFollow = (e:React.MouseEvent) => {
+  const handleFollow = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if(!currentUser) return ;
-    
+    if (!currentUser) return;
+
     let ourUserFollowing = [...user.following];
     let currentUserFollowers = [...currentUser.followers];
 
-    if(isFollowing){
-      ourUserFollowing = ourUserFollowing.filter((userId:string) => userId!==currentUser.$id);
-      currentUserFollowers = currentUserFollowers.filter((followersId: string) => followersId!==user.$id);
-      setFollowersCount(followersCount-1);
-
-    }else{
+    if (isFollowing) {
+      ourUserFollowing = ourUserFollowing.filter((userId: string) => userId !== currentUser.$id);
+      currentUserFollowers = currentUserFollowers.filter((followersId: string) => followersId !== user.$id);
+      setFollowersCount(followersCount - 1);
+    } else {
       ourUserFollowing.push(currentUser.$id);
       currentUserFollowers.push(user.$id);
-      setFollowersCount(followersCount+1);
+      setFollowersCount(followersCount + 1);
     }
     setIsFollowing(!isFollowing);
-    followController({currentUserId: user.$id,followingArray: ourUserFollowing, targetUserId: currentUser.$id, followersArray: currentUserFollowers});
-  }
-
-
-
+    await followController({
+      currentUserId: user.$id,
+      followingArray: ourUserFollowing,
+      targetUserId: currentUser.$id,
+      followersArray: currentUserFollowers
+    });
+  };
 
   return (
     <div className="profile-container">
@@ -61,10 +61,7 @@ const Profile = () => {
             <div className="flex xl:flex-row flex-col max-xl:items-center flex-1 gap-7">
               {/* User PFP */}
               <img
-                src={
-                  currentUser?.imageUrl ||
-                  "/assets/icons/profile-placeholder.svg"
-                }
+                src={currentUser?.imageUrl || "/assets/icons/profile-placeholder.svg"}
                 alt="profile"
                 className="w-28 h-28 lg:h-36 lg:w-36 rounded-full"
               />
@@ -83,19 +80,23 @@ const Profile = () => {
                       Post
                       <p className="profile-text">{followersCount}</p>
                       Followers
+                      <p className="profile-text">{currentUser?.following.length}</p>
+                      Following
                     </div>
                   </div>
-                  <div
-                    className={`${currentUser?.bio == null && "hidden"}`}
-                  >
+                  <div className={`${currentUser?.bio == null && "hidden"}`}>
                     {currentUser?.bio || "BIO"}
                   </div>
                 </div>
                 <div>
                   {user.$id !== currentUser?.$id ? (
-                    <Button className="shad-button_primary" onClick={handleFollow}
-                    disabled = {isFollowingAction}
-                    >{isFollowing ? "UnFollow" : "Follow"}</Button>
+                    <Button
+                      className="shad-button_primary"
+                      onClick={handleFollow}
+                      disabled={isFollowingAction}
+                    >
+                      {isFollowing ? "UnFollow" : "Follow"}
+                    </Button>
                   ) : (
                     <Link to={`/update-profile/${user.$id}`} className="flex-center shad-edit-button_dark_2 items-center">
                       <img
