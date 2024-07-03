@@ -106,23 +106,20 @@ export async function createPost(post: INewPost){
  
    try{
     const uploadedFile = await uploadFile(post.file [0])
-    //Uploading image to storage.
+
     if(!uploadedFile){
         throw Error;
     }
 
-    // Getting the file URL To attach to our post.
+    
     const fileUrl = await getFilePreview(uploadedFile.$id);
     if(!fileUrl){
-        //Then the file was not uploaded properly, I think we'd need to delete it.
         deleteFile(uploadedFile.$id);
         throw Error;
     }
 
-    //Convert tags to an array?
     const tags = post.tags?.replace(/ /g,'').split(',') || [];
 
-    //Save post to DB   
     const newPost = await databases.createDocument(
         appwriteConfig.databaseId,
         appwriteConfig.postCollectionId,

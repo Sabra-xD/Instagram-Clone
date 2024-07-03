@@ -1,11 +1,8 @@
 import Spinner from "@/components/ui/spinner";
 import useSelectorWithDelay from "@/lib/customHooks/useSelectorWithDelay";
-// import { selectIsAuthenticated } from "@/redux/slice/slice";
-// import { useSelector } from "react-redux";
 import { Outlet,Navigate } from "react-router-dom";
 const AuthLayOut = () => { 
-  // const isAuthed=false;
-  const {isAuthed, timerExpired}= useSelectorWithDelay(); // Use the selector
+  const {isAuthed, timerExpired}= useSelectorWithDelay(); 
 
 
   return (
