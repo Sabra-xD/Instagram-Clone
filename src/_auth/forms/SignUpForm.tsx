@@ -32,7 +32,6 @@ const SignUpForm = () => {
   })
  
   async function onSubmit(values: z.infer<typeof SignUpValidation>) {
-    console.log(values)
     const newUser = await createUserAccount(values);
     if(!newUser){
       return toast({
@@ -51,7 +50,6 @@ const SignUpForm = () => {
       return toast({title: 'Sign in failed. Please try again.'});
     }
 
-    console.log("Setting the newUser & Dispatching, The user is: ",newUser);
     dispatch(setUser(newUser));
     dispatch(setIsAuthenticated(true));
 

@@ -240,8 +240,7 @@ export const useAddComment = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({postId,content}:{postId:string, content:string}) => addComment(postId, content),
-        onSuccess: (data,variables) => {
-            console.log("The data and variables: ",data , variables);
+        onSuccess: (_data,variables) => {
                 queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_POST_BY_ID,variables.postId],
             });
@@ -255,10 +254,9 @@ export const useLikeComment = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({commentId,likesArray} : {commentId: string, likesArray: string[]}) => likeComment(commentId,likesArray),
-        onSuccess: (data,variables) => {
-            console.log("The  is: ",data, "The variables are: ",variables);
+        onSuccess: (data) => {
             queryClient.invalidateQueries({
-                queryKey: [QUERY_KEYS.GET_POST_BY_ID],
+                queryKey: [QUERY_KEYS.GET_POST_BY_ID,data?.$id],
             });
         }
     })
@@ -270,8 +268,7 @@ export const useDeleteComment = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (commentId: string) => deleteComment(commentId),
-        onSuccess: (data,variables) => {
-            console.log("Both of data and variables: ",data,variables);
+        onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_POST_BY_ID],
             })

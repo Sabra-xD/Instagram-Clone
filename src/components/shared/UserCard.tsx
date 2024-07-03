@@ -52,7 +52,7 @@ const UserCard = ({ user }: { user: Models.Document }) => {
         </div>
       </Link>
       <Button
-        className="shad-button_primary"
+        className={`${currentUser.$id === user.$id ? "hidden" : "shad-button_primary"}`}
         onClick={(e) => {
           e.stopPropagation();
           handleFollow(e);

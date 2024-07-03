@@ -57,7 +57,6 @@ const ProfileForm = ({user} : ProfileFormProps) => {
                     title:'Something went wrong, try again'
                   })
                 }
-                console.log("The updated user before we set him is: ",updatedUser);
                 dispatch(setUser(updatedUser));
                 navigator(`/`);
             }

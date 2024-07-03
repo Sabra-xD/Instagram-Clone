@@ -135,7 +135,7 @@ const PostDetails = () => {
               </Link>
 
               <div
-                className={`flex-center gap-4 ${user.$id !== post?.creator.$id && "hidden"}`}
+                className={`${user.$id !== post?.creator.$id ? "hidden" : "flex-center gap-4" }`}
               >
                 <Link to={`/update-post/${post?.$id}`}>
                   <img src={"/assets/icons/edit.svg"} alt="edit" width={24} height={24} />
@@ -167,7 +167,7 @@ const PostDetails = () => {
             {post.comment.map((comment: Models.Document) => {
 
               return (
-                <Comment user={post?.creator || ""} comment={comment}/>
+                <Comment comment={comment} key={comment.$id}/>
               );
               })}
 

@@ -17,9 +17,6 @@ const INITIAL_STATE = {
     user: INITIAL_USER,
     isLoading:false,
     isAuthenticated: false,
-    setUser: () => {},
-    setAuthenticated: () => {},
-    checkAuthUser: async () => false
 } 
 
 export const storeSlice = createSlice({

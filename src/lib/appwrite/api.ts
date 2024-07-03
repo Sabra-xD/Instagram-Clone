@@ -260,7 +260,6 @@ export async function getPostById(postId:string){
     try{
         const post = await databases.getDocument(appwriteConfig.databaseId,appwriteConfig.postCollectionId,postId);
         if(!post) throw Error;
-        console.log("The post we got is: ",post);
         
         return post;
     }catch(error){
@@ -537,7 +536,6 @@ export async function addComment(postId: string,content: string){
         
         if(!currentUser) throw Error;
 
-        console.log("The current user id is: ",currentUser.$id, "The post id is: ",postId , "The content is: ",content);
 
         const updatedComment = await databases.createDocument(
             appwriteConfig.databaseId,
@@ -559,7 +557,6 @@ export async function addComment(postId: string,content: string){
 
 export async function likeComment(commentId: string,likesArray: string[]){
 
-    console.log("The commentId is: ",commentId, "The likes array is: ",likesArray);
     try{
      const updatedComment = await databases.updateDocument(appwriteConfig.databaseId,
             appwriteConfig.commentsCollectionId,
@@ -610,7 +607,6 @@ export async function searchUsers(searchTerm: string){
 
 export async function followUser(currentUserId: string,followingArray: string[],targetUserId: string ,followersArray: string[]){
 
-    console.log(`currentUserId: ${currentUserId}, followingArray: ${followingArray}, targetUserId: ${targetUserId}, followersArray: ${followersArray}`);
 
     try{
         const currUser = await databases.updateDocument(appwriteConfig.databaseId,
@@ -621,7 +617,6 @@ export async function followUser(currentUserId: string,followingArray: string[],
             }
         );
         if(!currUser) throw Error;
-        console.log("The currUser is: ",currUser);
         const targetUser = await databases.updateDocument(appwriteConfig.databaseId,
             appwriteConfig.userCollectionId,
             targetUserId,
@@ -632,7 +627,6 @@ export async function followUser(currentUserId: string,followingArray: string[],
 
         //It should delete it from the currUser if it throws this error but we are keeping it REAL simple.
         if(!targetUser) throw Error;
-        console.log("The target user is: ",targetUser);
         return targetUser;
 
     }catch(error){

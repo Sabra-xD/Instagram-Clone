@@ -31,7 +31,6 @@ const SignInForm = () => {
   })
  
   async function onSubmit(values: z.infer<typeof SignInValidation>) {
-    console.log("The values are: ",values);
 
     const session = await signInAccount({
       email:values.email,
@@ -44,7 +43,6 @@ const SignInForm = () => {
       return toast({title: 'Sign in failed. Please try again.'});
     }
 
-    console.log("Setting the current user  from the login & Dispatching, The user is: ",currentUser);
     dispatch(setUser(currentUser));
     dispatch(setIsAuthenticated(true));
     

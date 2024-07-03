@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom"
 
 type commentType = {
-    user: Models.Document,
     comment: Models.Document,
 }
 
@@ -17,22 +16,22 @@ const isLiked = (userId:string,likesList: string[]) => {
 }
 
 
-const Comment = ({user,comment}:commentType) => {
+const Comment = ({comment}:commentType) => {
   const currUser = useSelector(selectUser);
-  const likesList = comment.likes.map((user:Models.Document) => user?.$id);
-
+  const likesList = comment.likes.map((user:Models.Document) => user.$id);
   const {mutateAsync: likeComment} = useLikeComment();
   const {mutateAsync: deleteComment, isPending: isDeleting} = useDeleteComment();
   const [likes,setLikes] = useState(likesList);
+  
 
   const handleLike = (e:React.MouseEvent) => {
     e.stopPropagation();
     let newLikes = [...likesList];
-    const hasLiked = newLikes.includes(user.$id); 
+    const hasLiked = newLikes.includes(currUser.$id); 
     if(hasLiked){
-      newLikes = newLikes.filter((id)=>id!==user.$id); 
+      newLikes = newLikes.filter((id:string)=>{return id !== currUser.$id}); 
     }else{
-      newLikes.push(user.$id);
+      newLikes.push(currUser.$id);
       }
       setLikes(newLikes);
       likeComment({commentId: comment.$id, likesArray: newLikes});
@@ -49,10 +48,10 @@ const Comment = ({user,comment}:commentType) => {
 
   return (
     <div className="flex w-full gap-2">
-    <Link to={`/profile/${user.$id}`} className="flex items-start gap-3">
+    <Link to={`/profile/${comment.users.$id}`} className="flex items-start gap-3">
       <img
         src={
-          user.imageUrl ||
+          comment.users.imageUrl ||
           "/assets/icons/profile-placeholder.svg"
         }
         alt="creator"
@@ -61,7 +60,7 @@ const Comment = ({user,comment}:commentType) => {
     </Link>
 
     <div className="flex flex-col flex-1">
-      <p className="comment-header text-light-3">{user.name}</p>
+      <p className="comment-header text-light-3">{comment.users.name}</p>
      
       <div className="comment-body text-ellipsis break-all">
         {comment.content}
@@ -84,7 +83,7 @@ const Comment = ({user,comment}:commentType) => {
 
         </div>
         {
-          currUser.$id === user.$id &&( isDeleting ? <Loader />:  <div className="flex flex-col items-center gap-1 mr-5">
+          currUser.$id === comment.users.$id &&( isDeleting ? <Loader />:  <div className="flex flex-col items-center gap-1 mr-5">
           <img src='/assets/icons/delete.svg'
            alt="like" width={20} height={20} 
           className="cursor-pointer"
