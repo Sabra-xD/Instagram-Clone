@@ -17,6 +17,7 @@ const UserCard = ({ user }: { user: Models.Document }) => {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, user.$id]);
+  
 
   const handleFollow = async (e: React.MouseEvent) => {
     e.stopPropagation();

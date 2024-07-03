@@ -1,7 +1,7 @@
 import AuthLayOut from './_auth/AuthLayOut';
 import SignInForm from './_auth/forms/SignInForm';
 import SignUpForm from './_auth/forms/SignUpForm';
-import { AllUsers, CreatePost, EditPost, Explore, Home, PostDetails, Profile, Saved, UpdateProfile } from './_root/Pages';
+import { AllUsers, CreatePost, EditPost, Explore, Home, PostDetails, Profile, Saved, UpdateProfile, Following, Followers} from './_root/Pages';
 import RootLayOut from './_root/RootLayOut';
 import './globals.css';
 import { Routes,Route } from 'react-router-dom';
@@ -51,7 +51,9 @@ const App = () => {
                 <Route path="/update-post/:id" element={<EditPost />}/>  
                 <Route path="/posts/:id" element={<PostDetails />}/>  
                 <Route path="/profile/:id/*" element={<Profile />}/>  
-                <Route path="/update-profile/:id" element={<UpdateProfile />}/>   
+                <Route path="/update-profile/:id" element={<UpdateProfile />}/>
+                <Route path="/following/:id" element={<Following />}/> 
+                <Route path="/followers/:id" element={<Followers />}/>  
             </Route>
 
 

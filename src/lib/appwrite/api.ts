@@ -641,3 +641,19 @@ export async function followUser(currentUserId: string,followingArray: string[],
 }
 
 
+export async function fetchUsersList(usersList: string[]) {
+    try {
+      const usersInformationPromises = usersList.map((userId) => getUserById(userId));
+      
+      const usersInformation = await Promise.all(usersInformationPromises);
+  
+      if (!usersInformation) throw new Error("No user information found");
+        
+      return usersInformation;
+  
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+

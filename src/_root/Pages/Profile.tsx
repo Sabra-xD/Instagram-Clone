@@ -17,7 +17,6 @@ const Profile = () => {
   const { mutateAsync: followController, isPending: isFollowingAction } = useFollowUser();
   const [isFollowing, setIsFollowing] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
-console.log("Tracing the isFollowing: ",isFollowing);
   useEffect(() => {
     if (currentUser) {
       setIsFollowing(currentUser.followers.includes(user.$id));
@@ -74,14 +73,22 @@ console.log("Tracing the isFollowing: ",isFollowing);
                   <p className="small-regular text-light-3">
                     @{currentUser?.username || "username"}
                   </p>
-                  <div className="flex-between mb-5">
-                    <div className="flex gap-1 items-center">
+                  <div className="flex gap-2 mb-5">
+                  <div className="flex gap-1 items-center">
+                      <div className="flex gap-1 items-center">
                       <p className="profile-text">{currentUser?.posts.length}</p>
                       Post
-                      <p className="profile-text">{followersCount}</p>
-                      Followers
+                      </div>
+                      <Link to={`/followers/${currentUser?.$id}`} className="flex gap-1 items-center">
+                        <p className="profile-text">{followersCount}</p>
+                        Followers
+                      </Link>
+
+                      <Link to={`/following/${currentUser?.$id}`} className="flex gap-1 items-center">
                       <p className="profile-text">{currentUser?.following.length}</p>
-                      Following
+                        Following
+                      </Link>
+                      
                     </div>
                   </div>
                   <div className={`${currentUser?.bio == null && "hidden"}`}>
