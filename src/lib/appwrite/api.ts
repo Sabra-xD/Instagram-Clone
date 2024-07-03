@@ -118,7 +118,8 @@ export async function createPost(post: INewPost){
         throw Error;
     }
 
-    const tags = post.tags?.replace(/ /g,'').split(',') || [];
+    const tags = post.tags ? post.tags.replace(/ /g, "").split(",") : [];
+
 
     const newPost = await databases.createDocument(
         appwriteConfig.databaseId,
