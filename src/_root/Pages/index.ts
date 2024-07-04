@@ -11,3 +11,4 @@ export {default as UpdateProfile } from './UpdateProfile';
 export {default as CreatePost } from './CreatePost';
 export {default as Following} from './Following'; 
 export {default as Followers} from './Followers';
+export {default as NotFound} from './NotFound';

@@ -2,7 +2,7 @@ import ProfileForm from "@/components/forms/ProfileForm";
 import Loader from "@/components/shared/Loader";
 import { useGetCurrentUser} from "@/lib/react-query/queriesAndMutations";
 import { useParams } from "react-router-dom";
-import Error from "./Error";
+import NotFound from "./NotFound";
 
 const EditProfile = () => {
   const {data: user, isPending: isLoading} = useGetCurrentUser();
@@ -18,7 +18,7 @@ const EditProfile = () => {
       </div>
         <ProfileForm user={user}/>
     </div>
- </div>) : (<Error />)
+ </div>) : (<NotFound />)
   )
 }
 
